@@ -6,11 +6,15 @@ import { CAMPSITES } from '../shared/campsites';
 const DirectoryScreen = ({ navigation})=>{
  const [campsites, setCampsites] = useState(CAMPSITES);
 
-     const renderDirectoryItem= ({item : campsite}) =>{
+     const renderDirectoryItem= ({ item : campsite }) =>{
         return(
-            <ListItem onPress={()=> navigation.navigate('Campsiteinfo', { campsite})}>
-        <Avatar source={campsite.image} rounded />
-        <ListItem.Content>
+            <ListItem 
+            onPress={()=> 
+            navigation.navigate('CampsiteInfo', { campsite})
+            }
+        >
+         <Avatar source={campsite.image} rounded />
+         <ListItem.Content>
             <ListItem.Title>{campsite.name}</ListItem.Title>
             <ListItem.Subtitle>
                 {campsite.description}
@@ -25,7 +29,7 @@ const DirectoryScreen = ({ navigation})=>{
         renderItem={renderDirectoryItem}
         keyExtractor={(item) => item.id.toString()}
         />
-    )
-}
+    );
+};
 
 export default DirectoryScreen;
