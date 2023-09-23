@@ -1,7 +1,14 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View,Button,Modal } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import RenderCampsite from '../features/campsites/RenderCampsite';
 import { toggleFavorite } from '../features/favorites/favoritesSlice';
+import { useState } from 'react';
+
+
+const showModal =() =>{
+    const[Modal,setShowModal] = useState(false);
+
+};
 
 const CampsiteInfoScreen = ({ route }) => {
     const { campsite } = route.params;
@@ -22,6 +29,7 @@ const CampsiteInfoScreen = ({ route }) => {
     };
 
     return (
+        <>
         <FlatList
             data={comments.commentsArray.filter(
                 (comment) => comment.campsiteId === campsite.id
@@ -43,6 +51,24 @@ const CampsiteInfoScreen = ({ route }) => {
                 </>
             }
         />
+        <Modal
+                animationType='slide'
+                transparent={false}
+                visible={showModal}
+                onRequestClose={() => setShowModal(!showModal)}
+            >
+                <View style={styles.modal}>
+                    <View style ={{margin:10}}>
+                        <Button 
+                        onPress={setShowModal(!showModal)}
+                        color='#808080' 
+                        title='Cancel'
+                         > 
+                        </Button>
+                    </View>
+                </View>
+            </Modal>
+        </>
     );
 };
 
@@ -60,6 +86,10 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
         backgroundColor: '#fff'
+    },
+    modal:{
+      justifyContent:'center',
+      margin:20
     }
 });
 
