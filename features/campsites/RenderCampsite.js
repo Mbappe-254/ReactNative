@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, PanResponder, Alert,Modal } from 'react-native';
+import { useRef } from 'react';
+import {
+    StyleSheet,
+    Text,
+    View,
+    PanResponder,
+    Alert,
+    Share
+} from 'react-native';
 import { Card, Icon } from 'react-native-elements';
 import { baseUrl } from '../../shared/baseUrl';
 import * as Animatable from 'react-native-animatable';
@@ -6,11 +14,20 @@ import * as Animatable from 'react-native-animatable';
 const RenderCampsite = (props) => {
     const { campsite } = props;
 
+    const view = useRef();
+
     const isLeftSwipe = ({ dx }) => dx < -200;
     const isRightSwipe = ({ dx }) => dx > 200;
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
+        onPanResponderGrant: () => {
+            view.current
+                .rubberBand(1000)
+                .then((endState) =>
+                    console.log(endState.finished ? 'finished' : 'canceled')
+                );
+        },
         onPanResponderEnd: (e, gestureState) => {
             console.log('pan responder end', gestureState);
             if (isLeftSwipe(gestureState)) {
@@ -31,18 +48,28 @@ const RenderCampsite = (props) => {
                                 props.isFavorite
                                     ? console.log('Already set as a favorite')
                                     : props.markFavorite()
-                        },
-                    
+                        }
                     ],
-
                     { cancelable: false }
                 );
-            }
-           else if (isRightSwipe(gestureState)){
-            props.onShowModal();
+            } else if (isRightSwipe(gestureState)) {
+                props.onShowModal();
             }
         }
     });
+
+    const shareCampsite = (title, message, url) => {
+        Share.share(
+            {
+                title,
+                message: `${title}: ${message} ${url}`,
+                url
+            },
+            {
+                dialogTitle: 'Share ' + title
+            }
+        );
+    };
 
     if (campsite) {
         return (
@@ -50,6 +77,7 @@ const RenderCampsite = (props) => {
                 animation='fadeInDownBig'
                 duration={2000}
                 delay={1000}
+                ref={view}
                 {...panResponder.panHandlers}
             >
                 <Card containerStyle={styles.cardContainer}>
@@ -79,6 +107,20 @@ const RenderCampsite = (props) => {
                             raised
                             reverse
                             onPress={props.onShowModal}
+                        />
+                        <Icon
+                            name='share'
+                            type='font-awesome'
+                            color='#5637DD'
+                            raised
+                            reverse
+                            onPress={() =>
+                                shareCampsite(
+                                    campsite.name,
+                                    campsite.description,
+                                    baseUrl + campsite.image
+                                )
+                            }
                         />
                     </View>
                 </Card>
